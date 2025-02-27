@@ -1,5 +1,5 @@
 ---
-title: Hextra Theme
+title: Arachne.ws
 layout: hextra-home
 ---
 
