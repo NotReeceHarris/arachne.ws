@@ -31,7 +31,7 @@ module:
 
   workspace: hugo.work
   imports:
-    - path: github.com/imfing/hextra
+    - path: github.com/NotReeceHarris/arachne.ws/docs
 
 markup:
   highlight:
