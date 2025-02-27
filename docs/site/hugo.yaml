@@ -1,6 +1,6 @@
 # Configuration
-baseURL: "https://example.com/"
-title: "Hextra"
+baseURL: "https://arachne.ws/"
+title: "arachne.ws"
 
 enableRobotsTXT: true
 # Parse Git commit
@@ -88,7 +88,7 @@ menu:
         type: search
     - name: GitHub
       weight: 6
-      url: "https://github.com/imfing/hextra"
+      url: "https://github.com/notreeceharris/arachne.ws"
       params:
         icon: github
 
@@ -102,13 +102,9 @@ menu:
       name: "About"
       pageRef: "/about"
       weight: 2
-    - identifier: hugoDocs
-      name: "Hugo Docs ↗"
-      url: "https://gohugo.io/documentation/"
-      weight: 3
 
 params:
-  description: Modern, responsive, batteries-included Hugo theme for creating beautiful static websites.
+  description: Bidirectional, low-latency and secure communication for every platform.
 
   navbar:
     displayTitle: true
@@ -155,7 +151,7 @@ params:
 
   editURL:
     enable: true
-    base: "https://github.com/imfing/hextra/edit/main/exampleSite/content"
+    base: "https://github.com/NotReeceHarris/arachne.ws/tree/main/docs/site/content"
 
   blog:
     list:
@@ -174,15 +170,15 @@ params:
       display: hover
 
   comments:
-    enable: false
+    enable: true
     type: giscus
 
     # https://giscus.app/
     giscus:
-      repo: imfing/hextra
-      repoId: R_kgDOJ9fJag
+      repo: notreeceharris/arachne.ws
+      repoId: R_kgDOOAoMqQ
       category: General
-      categoryId: DIC_kwDOJ9fJas4CY7gW
+      categoryId: DIC_kwDOOAoMqc4CnZ_6
       # mapping: pathname
       # strict: 0
       # reactionsEnabled: 1
