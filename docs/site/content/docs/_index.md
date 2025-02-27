@@ -1,6 +1,7 @@
 ---
 linkTitle: "Documentation"
 title: Introduction
+comments: false
 ---
 
 👋 Hello! Welcome to the Hextra documentation!

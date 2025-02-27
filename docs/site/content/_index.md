@@ -1,6 +1,7 @@
 ---
 title: Arachne.ws
 layout: hextra-home
+comments: false
 ---
 
 {{< hextra/hero-badge >}}
