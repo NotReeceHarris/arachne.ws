@@ -1,7 +1,9 @@
 # Docs
 docs/node_modules/
 docs/public/
+docs/site/public/
 docs/resources/
+docs/site/resources/
 docs/.hugo_build.lock
 
 # Logs
