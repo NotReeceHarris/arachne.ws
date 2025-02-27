@@ -1,6 +1,6 @@
 # Configuration
 baseURL: "https://arachne.ws/"
-title: "arachne.ws"
+title: "Arachne.ws"
 
 enableRobotsTXT: true
 # Parse Git commit
@@ -22,7 +22,7 @@ languages:
   en:
     languageName: English
     weight: 1
-    title: arachne.ws
+    title: Arachne.ws
 
 module:
   hugoVersion:

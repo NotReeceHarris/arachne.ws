@@ -11,7 +11,7 @@ layout: hextra-home
 
 <div class="hx-mt-6 hx-mb-6">
 {{< hextra/hero-headline >}}
-  Build modern websites&nbsp;<br class="sm:hx-block hx-hidden" />with Markdown and Hugo
+  Bidirectional, low-latency and secure&nbsp;<br class="sm:hx-block hx-hidden" />communication for every platform. 
 {{< /hextra/hero-headline >}}
 </div>
 
