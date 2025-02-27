@@ -1,5 +1,5 @@
-module github.com/imfing/hextra/exampleSite
+module github.com/NotReeceHarris/arachne.ws/docs/site
 
 go 1.20
 
-replace github.com/imfing/hextra => ../
+replace github.com/NotReeceHarris/arachne.ws/docs => ../

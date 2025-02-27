@@ -57,8 +57,8 @@ jobs:
         # Use the latest release of the theme to build docs
         run: |
           cd docs/site && rm go.mod
-          hugo mod init github.com/imfing/hextra/exampleSite
-          hugo mod get -u github.com/imfing/hextra
+          hugo mod init github.com/NotReeceHarris/arachne.ws/docs/site
+          hugo mod get -u github.com/NotReeceHarris/arachne.ws/docs
           hugo --minify --baseURL "${{ steps.pages.outputs.base_url }}/"
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
