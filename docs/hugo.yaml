@@ -1,6 +1,6 @@
-# Hugo configuration file
-baseURL: "https://arachne.ws/"
-title: "arachne.ws"
+# Configuration
+baseURL: "https://example.com/"
+title: "Hextra"
 
 enableRobotsTXT: true
 # Parse Git commit
@@ -8,10 +8,46 @@ enableGitInfo: true
 # enableEmoji: false
 hasCJKLanguage: true
 
-# import hextra as module
+# services:
+#   googleAnalytics:
+#     ID: G-MEASUREMENT_ID
+
+outputs:
+  home: [HTML]
+  page: [HTML]
+  section: [HTML, RSS]
+
+defaultContentLanguage: en
+languages:
+  en:
+    languageName: English
+    weight: 1
+    title: Hextra
+  fa:
+    languageName: فارسی
+    languageCode: fa
+    languageDirection: rtl
+    weight: 2
+    title: هگزترا
+  ja:
+    languageName: 日本語
+    languageCode: ja
+    weight: 3
+    title: Hextra
+  zh-cn:
+    languageName: 简体中文
+    languageCode: zh-CN
+    weight: 4
+    title: Hextra
+
 module:
+  hugoVersion:
+    extended: true
+    min: "0.134.0"
+
+  workspace: hugo.work
   imports:
-  - path: github.com/imfing/hextra
+    - path: github.com/imfing/hextra
 
 markup:
   highlight:
@@ -26,25 +62,53 @@ markup:
           inline: [['\(', '\)']]
         enable: true
 
+enableInlineShortcodes: true
+
 menu:
   main:
-    - name: Docs
+    - identifier: documentation
+      name: Documentation
       pageRef: /docs
       weight: 1
-    - name: About
-      pageRef: /about
+    - identifier: showcase
+      name: Showcase
+      pageRef: /showcase
       weight: 2
-    - name: Repo ↗
-      url: "https://github.com/NotReeceHarris/arachne.ws"
+    - identifier: blog
+      name: Blog
+      pageRef: /blog
       weight: 3
-    - name: Search
+    - identifier: about
+      name: About
+      pageRef: /about
       weight: 4
+    - name: Search
+      weight: 5
       params:
         type: search
+    - name: GitHub
+      weight: 6
+      url: "https://github.com/imfing/hextra"
+      params:
+        icon: github
+
+  sidebar:
+    - identifier: more
+      name: More
+      params:
+        type: separator
+      weight: 1
+    - identifier: about
+      name: "About"
+      pageRef: "/about"
+      weight: 2
+    - identifier: hugoDocs
+      name: "Hugo Docs ↗"
+      url: "https://gohugo.io/documentation/"
+      weight: 3
 
 params:
-
-  description: Bidirectional, low-latency and secure communication for every platform.
+  description: Modern, responsive, batteries-included Hugo theme for creating beautiful static websites.
 
   navbar:
     displayTitle: true
@@ -66,6 +130,18 @@ params:
     default: system
     displayToggle: true
 
+  footer:
+    enable: true
+    displayCopyright: true
+    displayPoweredBy: true
+    width: normal
+
+  # Display the last modification date
+  displayUpdatedDate: true
+  dateFormat: "January 2, 2006"
+
+  # Search
+  # flexsearch is enabled by default
   search:
     enable: true
     type: flexsearch
@@ -77,19 +153,9 @@ params:
       # https://github.com/nextapps-de/flexsearch/#tokenizer-prefix-search
       tokenize: forward
 
-  footer:
-    displayCopyright: false
-    displayPoweredBy: true
-
-  # Display the last modification date
-  displayUpdatedDate: true
-  dateFormat: "January 2, 2006"
-
-  highlight:
-    copy:
-      enable: true
-      # hover | always
-      display: hover
+  editURL:
+    enable: true
+    base: "https://github.com/imfing/hextra/edit/main/exampleSite/content"
 
   blog:
     list:
@@ -101,6 +167,26 @@ params:
     article:
       displayPagination: true
 
-  editURL:
-    enable: true
-    base: "https://github.com/NotReeceHarris/arachne.ws/tree/main/docs/content"
+  highlight:
+    copy:
+      enable: true
+      # hover | always
+      display: hover
+
+  comments:
+    enable: false
+    type: giscus
+
+    # https://giscus.app/
+    giscus:
+      repo: imfing/hextra
+      repoId: R_kgDOJ9fJag
+      category: General
+      categoryId: DIC_kwDOJ9fJas4CY7gW
+      # mapping: pathname
+      # strict: 0
+      # reactionsEnabled: 1
+      # emitMetadata: 0
+      # inputPosition: top
+      # lang: en
+      # theme: noborder_dark
