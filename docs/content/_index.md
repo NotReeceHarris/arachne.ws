@@ -1,6 +1,6 @@
 ---
-title: arachne.ws
-toc: false
+title: Hextra Theme
+layout: hextra-home
 ---
 
 {{< hextra/hero-badge >}}
