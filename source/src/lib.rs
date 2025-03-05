@@ -6,10 +6,12 @@
 // Re-export modules for public use
 pub mod handshake;
 pub mod frame;
+pub mod connection_manager;
 pub mod server;
 
 // Re-export important types
-pub use server::WebSocketServer;
+pub use connection_manager::ConnectionManager;
+pub use server::{WebSocketServer, WebSocketConnection};
 pub use frame::{WebSocketFrame, OpCode};
 pub use handshake::HandshakeError;
 
@@ -36,6 +38,7 @@ impl WebSocket {
 }
 
 /// Represents a WebSocket message.
+#[derive(Clone)]
 pub enum WebSocketMessage {
     Text(String),
     Binary(Vec<u8>),

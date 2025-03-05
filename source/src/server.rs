@@ -1,5 +1,5 @@
 use std::net::{TcpListener, TcpStream};
-use std::io::{Read, Write};
+use std::io::{Read};
 use crate::{WebSocketError, handshake, frame, WebSocketMessage, HandshakeError};
 
 pub struct WebSocketServer {
@@ -55,35 +55,6 @@ impl WebSocketConnection {
                 "Not a WebSocket request".to_string(),
             )))
         }
-    }
-
-    pub fn handle_messages(&mut self) -> Result<(), WebSocketError> {
-        loop {
-            match self.read_message() {
-                Ok(message) => {
-                    match message {
-                        WebSocketMessage::Text(text) => {
-                            println!("Received text message: {}", text);
-                            // Echo the message back to the client
-                            self.send_message(WebSocketMessage::Text(text))?;
-                        }
-                        WebSocketMessage::Binary(data) => {
-                            println!("Received binary message: {:?}", data);
-                        }
-                        WebSocketMessage::Close => {
-                            println!("Client requested to close the connection.");
-                            break;
-                        }
-                        _ => {}
-                    }
-                }
-                Err(e) => {
-                    eprintln!("Error reading message: {:?}", e);
-                    break;
-                }
-            }
-        }
-        Ok(())
     }
 
     pub fn read_message(&mut self) -> Result<WebSocketMessage, WebSocketError> {
@@ -154,5 +125,13 @@ impl WebSocketConnection {
 
         frame::construct_frame(&mut self.stream, frame)?;
         Ok(())
+    }
+
+    pub fn is_closed(&self) -> bool {
+        // Try to clone the stream to check if it is still open
+        match self.stream.try_clone() {
+            Ok(_) => false, // Connection is still open
+            Err(_) => true, // Connection is closed or in an invalid state
+        }
     }
 }

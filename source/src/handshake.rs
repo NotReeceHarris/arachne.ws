@@ -11,22 +11,13 @@ where
 {
     println!("Performing handshake");
 
-    // Debug: Print the raw request
-    println!("Raw request:\n{}", request);
-
     // Extract the WebSocket key
     let key = extract_websocket_key(request).ok_or(WebSocketError::HandshakeError(
         HandshakeError::InvalidKey("Missing or invalid Sec-WebSocket-Key".to_string()),
     ))?;
 
-    // Debug: Print the extracted key
-    println!("Extracted Sec-WebSocket-Key: {}", key);
-
     // Generate the accept key
     let accept_key = generate_accept_key(&key);
-
-    // Debug: Print the generated accept key
-    println!("Generated Sec-WebSocket-Accept: {}", accept_key);
 
     // Send the HTTP 101 Switching Protocols response
     let response = format!(
@@ -36,9 +27,6 @@ where
         Sec-WebSocket-Accept: {}\r\n\r\n",
         accept_key
     );
-
-    // Debug: Print the response
-    println!("Sending response:\n{}", response);
 
     // Write the response to the stream
     stream.write_all(response.as_bytes())?;
