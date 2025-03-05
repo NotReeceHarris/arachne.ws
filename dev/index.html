@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+        <title>Arachne.ws Dev Suite</title>
+
+        <script>
+            const ws = new WebSocket("ws://localhost:8008");
+
+            ws.onopen = () => {
+                console.log("Connected to server");
+            }
+
+            ws.onmessage = (msg) => {
+                const recv = document.getElementById("recv");
+                const p = document.createElement("p");
+                p.innerText = msg.data;
+                recv.appendChild(p);
+                recv.scrollTop = recv.scrollHeight;
+            }
+
+            document.addEventListener("DOMContentLoaded", () => {
+                const send = document.getElementById("send");
+                send.addEventListener("submit", (e) => {
+                    e.preventDefault();
+                    const input = send.querySelector("input");
+                    ws.send(input.value);
+                    input.value = "";
+                });
+            });
+        </script>
+
+    </head>
+    <body class="p-8">
+        
+        <div class="bg-slate-900 px-5 py-6 flex flex-col gap-5 max-w-2xl mx-auto rounded-sm shadow-lg">
+            <div class="flex gap-3">
+                <form class="flex grow" id="send">
+                    <input type="text" required placeholder="message" class="bg-white px-3 py-1.5 grow rounded-l-sm">
+                    <button class="bg-emerald-600 text-white px-3 py-1.5 rounded-r-sm cursor-pointer">Send</button>
+                </form>
+                <button class="bg-red-600 text-white px-3 py-1.5 rounded-sm cursor-pointer">Disconnect</button>
+            </div>
+            <div id="recv" class="bg-white rounded-sm px-4 py-3 font-mono flex flex-col gap-1 overflow-auto h-96">
+
+            </div>
+        </div>
+
+    </body>
+</html>

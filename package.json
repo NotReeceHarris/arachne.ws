@@ -1,0 +1,11 @@
+{
+  "name": "arachne.ws",
+  "version": "0.1.0",
+  "scripts": {
+    "dev": "concurrently \"cargo run --package dev\" \"simple-server dev 80\" -n ws,dev"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "simple-server": "^1.1.1"
+  }
+}
