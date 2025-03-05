@@ -1,19 +1,17 @@
 use std::net::{TcpListener, TcpStream};
-use crate::{WebSocketError, handshake, frame};
+use std::io::{Read, Write};
+use crate::{WebSocketError, handshake, frame, WebSocketMessage, HandshakeError};
 
-/// Represents a WebSocket server.
 pub struct WebSocketServer {
     listener: TcpListener,
 }
 
 impl WebSocketServer {
-    /// Binds the WebSocket server to the specified address.
     pub fn bind(addr: &str) -> Result<Self, std::io::Error> {
         let listener = TcpListener::bind(addr)?;
         Ok(WebSocketServer { listener })
     }
 
-    /// Accepts incoming WebSocket connections.
     pub fn incoming(&self) -> impl Iterator<Item = WebSocketConnection> + '_ {
         self.listener.incoming().filter_map(|stream| {
             match stream {
@@ -21,7 +19,7 @@ impl WebSocketServer {
                     match WebSocketConnection::new(stream) {
                         Ok(conn) => Some(conn),
                         Err(e) => {
-                            eprintln!("Failed to establish WebSocket connection: {:?}", e);
+                            eprintln!("Failed to establish connection: {:?}", e);
                             None
                         }
                     }
@@ -35,68 +33,125 @@ impl WebSocketServer {
     }
 }
 
-/// Represents a WebSocket connection.
 pub struct WebSocketConnection {
     stream: TcpStream,
 }
 
 impl WebSocketConnection {
-    /// Creates a new WebSocket connection from a TCP stream.
     pub fn new(mut stream: TcpStream) -> Result<Self, WebSocketError> {
-        // Perform the WebSocket handshake
-        handshake::perform_handshake(&mut stream)?;
-        Ok(WebSocketConnection { stream })
+        let mut buffer = [0; 1024];
+        let bytes_read = stream.read(&mut buffer)?;
+        let request = String::from_utf8_lossy(&buffer[..bytes_read]).to_string(); // Convert to owned String
+    
+        println!("Received HTTP request: {}", request);
+    
+        // Check if it's a WebSocket upgrade request
+        if request.contains("Upgrade: websocket") {
+            handshake::perform_handshake(&mut stream, &request)?; // Pass the request to perform_handshake
+            Ok(WebSocketConnection { stream })
+        } else {
+            // Handle HTTP request (if needed)
+            Err(WebSocketError::HandshakeError(HandshakeError::InvalidKey(
+                "Not a WebSocket request".to_string(),
+            )))
+        }
     }
 
-    /// Reads a WebSocket message from the connection.
-    pub fn read_message(&mut self) -> Result<crate::WebSocketMessage, WebSocketError> {
+    pub fn handle_messages(&mut self) -> Result<(), WebSocketError> {
+        loop {
+            match self.read_message() {
+                Ok(message) => {
+                    match message {
+                        WebSocketMessage::Text(text) => {
+                            println!("Received text message: {}", text);
+                            // Echo the message back to the client
+                            self.send_message(WebSocketMessage::Text(text))?;
+                        }
+                        WebSocketMessage::Binary(data) => {
+                            println!("Received binary message: {:?}", data);
+                        }
+                        WebSocketMessage::Close => {
+                            println!("Client requested to close the connection.");
+                            break;
+                        }
+                        _ => {}
+                    }
+                }
+                Err(e) => {
+                    eprintln!("Error reading message: {:?}", e);
+                    break;
+                }
+            }
+        }
+        Ok(())
+    }
+
+    pub fn read_message(&mut self) -> Result<WebSocketMessage, WebSocketError> {
         let frame = frame::parse_frame(&mut self.stream)?;
         match frame.opcode {
             frame::OpCode::Text => {
                 let text = String::from_utf8(frame.payload)
                     .map_err(|_| WebSocketError::InvalidFrame)?;
-                Ok(crate::WebSocketMessage::Text(text))
+                Ok(WebSocketMessage::Text(text))
             }
             frame::OpCode::Binary => {
-                Ok(crate::WebSocketMessage::Binary(frame.payload))
+                Ok(WebSocketMessage::Binary(frame.payload))
             }
             frame::OpCode::Ping => {
-                Ok(crate::WebSocketMessage::Ping(frame.payload))
+                Ok(WebSocketMessage::Ping(frame.payload))
             }
             frame::OpCode::Pong => {
-                Ok(crate::WebSocketMessage::Pong(frame.payload))
+                Ok(WebSocketMessage::Pong(frame.payload))
             }
             frame::OpCode::Close => {
-                Ok(crate::WebSocketMessage::Close)
+                Ok(WebSocketMessage::Close)
             }
             _ => Err(WebSocketError::InvalidFrame),
         }
     }
 
-    /// Sends a WebSocket message over the connection.
-    pub fn send_message(&mut self, message: crate::WebSocketMessage) -> Result<(), WebSocketError> {
+    pub fn send_message(&mut self, message: WebSocketMessage) -> Result<(), WebSocketError> {
         let frame = match message {
-            crate::WebSocketMessage::Text(text) => frame::WebSocketFrame {
-                opcode: frame::OpCode::Text,
-                payload: text.into_bytes(),
-            },
-            crate::WebSocketMessage::Binary(data) => frame::WebSocketFrame {
-                opcode: frame::OpCode::Binary,
-                payload: data,
-            },
-            crate::WebSocketMessage::Ping(data) => frame::WebSocketFrame {
-                opcode: frame::OpCode::Ping,
-                payload: data,
-            },
-            crate::WebSocketMessage::Pong(data) => frame::WebSocketFrame {
-                opcode: frame::OpCode::Pong,
-                payload: data,
-            },
-            crate::WebSocketMessage::Close => frame::WebSocketFrame {
-                opcode: frame::OpCode::Close,
-                payload: Vec::new(),
-            },
+            WebSocketMessage::Text(text) => {
+                println!("Sending text message: {}", text);
+                frame::WebSocketFrame {
+                    opcode: frame::OpCode::Text,
+                    payload: text.into_bytes(),
+                }
+            }
+            WebSocketMessage::Binary(data) => {
+                println!("Sending binary message: {:?}", data);
+                frame::WebSocketFrame {
+                    opcode: frame::OpCode::Binary,
+                    payload: data,
+                }
+            }
+            WebSocketMessage::Ping(data) => {
+                println!("Sending ping message: {:?}", data);
+                frame::WebSocketFrame {
+                    opcode: frame::OpCode::Ping,
+                    payload: data,
+                }
+            }
+            WebSocketMessage::Pong(data) => {
+                println!("Sending pong message: {:?}", data);
+                frame::WebSocketFrame {
+                    opcode: frame::OpCode::Pong,
+                    payload: data,
+                }
+            }
+            WebSocketMessage::Close => {
+                println!("Sending close message");
+                frame::WebSocketFrame {
+                    opcode: frame::OpCode::Close,
+                    payload: Vec::new(),
+                }
+            }
         };
+
+        // Debug: Print the frame being sent
+        println!("Sending frame: {:?}", frame);
+
         frame::construct_frame(&mut self.stream, frame)?;
         Ok(())
     }

@@ -104,20 +104,26 @@ pub fn construct_frame(stream: &mut dyn Write, frame: WebSocketFrame) -> Result<
     let mut header = [0u8; 2];
     header[0] = 0x80 | (frame.opcode as u8); // FIN bit set + opcode
 
+    println!("Constructing frame");
+
     if frame.payload.len() <= 125 {
         header[1] = frame.payload.len() as u8;
+        stream.write_all(&header)?; // Write header for small payloads
     } else if frame.payload.len() <= 65535 {
         header[1] = 126;
         let len_bytes = (frame.payload.len() as u16).to_be_bytes();
-        stream.write_all(&header)?;
-        stream.write_all(&len_bytes)?;
+        stream.write_all(&header)?; // Write header
+        stream.write_all(&len_bytes)?; // Write extended payload length
     } else {
         header[1] = 127;
         let len_bytes = (frame.payload.len() as u64).to_be_bytes();
-        stream.write_all(&header)?;
-        stream.write_all(&len_bytes)?;
+        stream.write_all(&header)?; // Write header
+        stream.write_all(&len_bytes)?; // Write extended payload length
     }
 
-    stream.write_all(&frame.payload)?;
+    println!("Header: {:?}", header);
+    println!("Payload: {:?}", frame.payload);
+
+    stream.write_all(&frame.payload)?; // Write payload
     Ok(())
 }
