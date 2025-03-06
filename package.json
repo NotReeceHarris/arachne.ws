@@ -2,12 +2,14 @@
   "name": "arachne.ws",
   "version": "0.1.0",
   "scripts": {
-    "serve": "serve dev -l 80",
-    "ws": "cargo watch -i dev/index.html -x run --package dev",
-    "dev": "concurrently \"cargo watch -x run --package dev\" \"serve dev -l 80\" -n ws,dev"
+    "dev": "concurrently \"tsx --watch dev/\" \"serve dev -l 80 -n -L\" -n ws,dev"
+  },
+  "dependencies": {
+    "tsx": "^4.19.3"
   },
   "devDependencies": {
+    "@types/node": "^22.13.9",
     "concurrently": "^9.1.2",
-    "serve": "14.2.4"
+    "serve": "^14.2.4"
   }
 }

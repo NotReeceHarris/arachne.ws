@@ -1,5 +1,0 @@
-[workspace]
-members = [
-    "source",   # Framework code
-    "dev",      # Development/testing code
-]
