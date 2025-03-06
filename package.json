@@ -3,9 +3,8 @@
   "version": "0.1.0",
   "scripts": {
     "dev": "concurrently \"tsx --watch dev/\" \"serve dev -l 80 -n -L\" -n ws,dev",
-
     "build:wasm": "npm run build:wasm:handle_websocket_frame",
-    "build:wasm:handle_websocket_frame": "cd server/rust/handle_websocket_frame && wasm-pack build --target nodejs --out-dir ../../wasm/handle_websocket_frame --release"
+    "build:wasm:handle_websocket_frame": "cd server/rust/handle_websocket_frame && wasm-pack build --target nodejs --out-dir ../../wasm/handle_websocket_frame --release && rimraf ../../wasm/handle_websocket_frame/.gitignore"
   },
   "devDependencies": {
     "@types/node": "^22.13.9",
@@ -14,6 +13,7 @@
     "tsx": "^4.19.3"
   },
   "dependencies": {
-    "handle_websocket_frame": "file:server/wasm/handle_websocket_frame"
+    "handle_websocket_frame": "file:server/wasm/handle_websocket_frame",
+    "rimraf": "^6.0.1"
   }
 }

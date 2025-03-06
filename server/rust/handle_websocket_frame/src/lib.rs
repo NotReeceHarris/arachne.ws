@@ -1,9 +1,11 @@
 use wasm_bindgen::prelude::*;
-use js_sys::Uint8Array;
+use js_sys::{Uint8Array, WebAssembly};
 
 #[wasm_bindgen]
 pub fn handle_websocket_frame(data: &[u8]) -> JsValue {
     // Directly access wasm memory (faster, less GC overhead)
+    let memory = wasm_bindgen::memory().dyn_into::<WebAssembly::Memory>().unwrap();
+    let buffer = memory.buffer();
 
     // First byte contains the opcode
     let opcode = data[0] & 0x0f;
@@ -30,7 +32,6 @@ pub fn handle_websocket_frame(data: &[u8]) -> JsValue {
     } else {
         None
     };
-    
     if is_masked {
         offset += 4;
     }
@@ -38,7 +39,7 @@ pub fn handle_websocket_frame(data: &[u8]) -> JsValue {
     let payload_slice = &data[offset..offset + payload_length];
 
     // Directly copy and unmask the payload into WebAssembly memory
-    let payload_js = Uint8Array::new_with_length(payload_length as u32);
+    let mut payload_js = Uint8Array::new_with_length(payload_length as u32);
     if let Some(key) = masking_key {
         for (i, &byte) in payload_slice.iter().enumerate() {
             payload_js.set_index(i as u32, byte ^ key[i % 4]);

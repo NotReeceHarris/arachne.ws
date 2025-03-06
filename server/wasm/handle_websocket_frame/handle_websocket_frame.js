@@ -211,6 +211,17 @@ module.exports.__wbg_buffer_609cc3eee51ed158 = function(arg0) {
     return addHeapObject(ret);
 };
 
+module.exports.__wbg_instanceof_Memory_111add5588accff2 = function(arg0) {
+    let result;
+    try {
+        result = getObject(arg0) instanceof WebAssembly.Memory;
+    } catch (_) {
+        result = false;
+    }
+    const ret = result;
+    return ret;
+};
+
 module.exports.__wbg_length_a446193dc22c12f8 = function(arg0) {
     const ret = getObject(arg0).length;
     return ret;
