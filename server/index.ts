@@ -5,6 +5,8 @@ import Connection from './connection';
 import type { Duplex } from 'stream';
 import type { ConnectionType } from './connection';
 
+import { handle_websocket_frame } from "handle_websocket_frame";
+
 // https://www.rfc-editor.org/rfc/rfc6455
 const RFC_6455 = '258EAFA5-E914-47DA-95CA-C5AB0DC85B11';
 
@@ -59,9 +61,7 @@ export default class {
 
         // Handle WebSocket frames
         socket.on('data', (data) => {
-            console.time('handleWebSocketFrame');
             this.handleWebSocketFrame(connection, data);
-            console.timeEnd('handleWebSocketFrame');
         });
 
         // Handle connection close
@@ -76,76 +76,24 @@ export default class {
             .digest('base64');
     }
 
-    private handleWebSocketFrame(connection: ConnectionType, data: Buffer) {
-        // Parse WebSocket frame
-        const opcode = data[0] & 0x0f; // First byte contains the opcode
-        const isMasked = (data[1] & 0x80) !== 0; // Second byte contains the MASK bit
-        let payloadLength = data[1] & 0x7f; // Second byte contains the payload length
-    
-        let offset = 2; // Start reading after the first two bytes
-    
-        // Handle extended payload length
-        if (payloadLength === 126) {
-            payloadLength = data.readUInt16BE(offset);
-            offset += 2;
-        } else if (payloadLength === 127) {
-            // Note: JavaScript cannot handle 64-bit integers, so we assume the payload length is within 32 bits
-            payloadLength = data.readUInt32BE(offset + 4);
-            offset += 8;
-        }
-    
-        // Read the masking key (if present)
-        let maskingKey: Uint8Array | null = null;
-        if (isMasked) {
-            maskingKey = new Uint8Array(data.buffer, offset, 4);
-            offset += 4;
-        }
-    
-        // Read the payload data
-        const payload = new Uint8Array(data.buffer, offset, payloadLength);
-    
-        // Unmask the payload (if masked)
-        if (isMasked && maskingKey) {
-            this.unmaskPayload(payload, maskingKey);
-        }
-    
-        // Handle the frame based on the opcode
-        if (opcode === 0x8) {
-            // Close frame
-            console.log('Received close frame');
-            connection.socket.end();
-            this.connections.delete(connection);
-            return;
-        }
-    
-        if (opcode === 0x1) {
-            // Text frame
-            const message = Buffer.from(payload).toString('utf-8');
-            console.log('Received message:', message);
+    private async handleWebSocketFrame(connection: ConnectionType, data: Buffer) {
 
+        console.time('handleWebSocketFrame');
+        const {opcode, payload} = handle_websocket_frame(data);
+        console.timeEnd('handleWebSocketFrame');
+    
+        // Close frame
+        if (opcode === 0x8) {
+            connection.socket.end();
+            return this.connections.delete(connection);
+        }
+    
+        // Text frame
+        if (opcode === 0x1) {
+            const message = Buffer.from(payload).toString('utf-8');
             const event = connection.events['message'];
             if (event) event(message);
-        }
-    }
-    
-    private unmaskPayload(payload: Uint8Array, maskingKey: Uint8Array) {
-        // Fast unmasking using loop unrolling
-        const len = payload.length;
-        const key = maskingKey;
-        let i = 0;
-    
-        // Process 4 bytes at a time
-        for (; i + 3 < len; i += 4) {
-            payload[i] ^= key[0];
-            payload[i + 1] ^= key[1];
-            payload[i + 2] ^= key[2];
-            payload[i + 3] ^= key[3];
-        }
-    
-        // Process remaining bytes
-        for (; i < len; i++) {
-            payload[i] ^= key[i % 4];
-        }
+        }   
     }
 
     on(event: string, callback: (connection: ConnectionType) => void): void {

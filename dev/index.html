@@ -11,6 +11,7 @@
                 const send = document.getElementById("send");
                 const recv = document.getElementById("recv");
                 const status = document.getElementById("status");
+                const lorem = document.getElementById("lorem");
 
                 const ws = new WebSocket("ws://localhost:8008");
                 status.innerText = "connecting";
@@ -43,6 +44,11 @@
                     console.log(`sent: ${input.value}`);
                     input.value = "";
                 });
+
+                lorem.addEventListener("click", () => {
+                    ws.send("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec mollis id leo et tincidunt. Phasellus vitae ligula semper, posuere nisi eu, cursus leo. Sed nunc mauris, maximus sit amet mauris non, malesuada porttitor est. Aenean imperdiet ultricies nulla a dignissim. Praesent vehicula suscipit purus, id semper nisl. Aliquam erat volutpat. Nunc nisi nibh, tincidunt eu laoreet suscipit, aliquet eu velit. Nam sapien sapien, mattis sed feugiat ac, sollicitudin vel libero. Vestibulum laoreet nec magna a consequat. Fusce facilisis, magna sed aliquet commodo, erat tellus suscipit nisi, ac dictum justo urna ut dolor. Nullam sed leo at justo porttitor sagittis. Maecenas nec vehicula lacus. Nunc fermentum augue orci, vitae accumsan risus rhoncus at. Vivamus hendrerit diam at ornare fermentum. Suspendisse non ante massa. Cras erat nunc, venenatis vitae mauris ut, sagittis rutrum mauris. ");
+                    console.log("sent: lorem...");
+                });
             });
         </script>
 
@@ -62,6 +68,7 @@
                     <input type="text" required placeholder="message" class="border border-black border-r-0 bg-white px-3 py-1.5 grow rounded-l-sm">
                     <button class="border border-black bg-black text-white px-5 py-1.5 rounded-r-sm cursor-pointer">Send</button>
                 </form>
+                <button id="lorem" class="border border-black bg-black text-white px-5 py-1.5 rounded-sm cursor-pointer">Send Lorem</button>
             </div>
             <div id="recv" class="border-t pt-5 pb-3 font-mono flex flex-col gap-1 overflow-auto min-h-96"></div>
         </div>
