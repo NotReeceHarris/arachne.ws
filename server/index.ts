@@ -1,11 +1,11 @@
 import type { Server } from 'http';
 import { createHash } from 'crypto';
 import Connection from './connection';
+import { handle_websocket_frame } from "handle_websocket_frame";
 
 import type { Duplex } from 'stream';
 import type { ConnectionType } from './connection';
 
-import { handle_websocket_frame } from "handle_websocket_frame";
 
 // https://www.rfc-editor.org/rfc/rfc6455
 const RFC_6455 = '258EAFA5-E914-47DA-95CA-C5AB0DC85B11';
