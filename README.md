@@ -1,4 +1,4 @@
-# arachne.ws
+# 🕷️ Arachne.ws 
 
 > **Light weight, high performance, easy to use, and secure communications.**
 
