@@ -15,13 +15,18 @@
 import { handle_websocket_frame } from "handle_websocket_frame";
 import { randomBytes } from 'crypto';
 
-export default function() {
-    console.log('Warming up the server...');
+export default function(warmUpRuns: number = 150, warmUpDataSize: number = 1 * 1024 * 1024) {
 
-    const warmUpRuns = 150;
-    const data = randomBytes(1 * 1024 * 1024); // Generate 1MB of random data
+    console.log('Warming up the wasm...');
+    const data = randomBytes(warmUpDataSize);
 
-    for (let i = 0; i < warmUpRuns; i++) {
-        handle_websocket_frame(data); // Repeatedly call the Wasm function to warm it up
+    try {
+        for (let i = 0; i < warmUpRuns; i++) {
+            handle_websocket_frame(data);
+        }
+        console.log('Wasm warmed up successfully!');
+    } catch (error) {
+        console.error('Error warming up the Wasm:', error);
     }
+    
 }

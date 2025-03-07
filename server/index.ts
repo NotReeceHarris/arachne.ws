@@ -3,12 +3,13 @@ import { createHash } from 'crypto';
 import Connection from './connection';
 import { handle_websocket_frame } from 'handle_websocket_frame';
 import warmup from './warmup';
+import { DefaultOptions } from './options';
+import type { Options } from './options';
 
 import type { Duplex } from 'stream';
 import type { ConnectionType } from './connection';
 
-// RFC 6455 WebSocket protocol GUID for handshake key hashing
-// https://www.rfc-editor.org/rfc/rfc6455
+// RFC 6455 WebSocket protocol GUID for handshake key hashing (https://www.rfc-editor.org/rfc/rfc6455)
 const RFC_6455 = '258EAFA5-E914-47DA-95CA-C5AB0DC85B11';
 
 export default class WebSocketServer {
@@ -21,14 +22,19 @@ export default class WebSocketServer {
     // Set of active WebSocket connections
     public readonly connections: Set<ConnectionType> = new Set();
 
-    constructor(httpServer: Server) {
+    private options: Options;
+
+    constructor(httpServer: Server, options: Options = DefaultOptions) {
         // Validate the provided HTTP server
         if (!httpServer || typeof httpServer !== 'object') {
             throw new Error('Invalid HTTP server');
         }
 
+        // Validate the provided options
+        this.options = { ...DefaultOptions, ...options };
+
         // Warm up the WebAssembly module to ensure optimal performance
-        warmup();
+        if (this.options.do_warmup) warmup(this.options.warmup_runs, this.options.warmup_data_size);
 
         // Store the HTTP server reference
         this.httpServer = httpServer;
