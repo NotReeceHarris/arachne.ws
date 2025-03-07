@@ -46,6 +46,23 @@ export default class WebSocketServer {
     }
 
     /**
+     * Logs a message at the specified log level.
+     *
+     * @param level - The log level (e.g., 'info', 'error').
+     * @param message - The log message.
+     * @param error - The optional error object.
+     */
+    private log(level: string, message: string, error?: Error) {
+        const levels = this.options.verbose?.split(',');
+        if (!levels || levels.includes('silent')) return;
+        
+        if (levels.includes(level) || levels.includes('debug')) {
+            const log = error ? `: ${error.message}\n${error.stack}` : message;
+            console.log(`[${new Date().toISOString()}] [${level.toUpperCase()}] ${log}`);
+        }
+    }
+
+    /**
      * Handles the HTTP upgrade request to establish a WebSocket connection.
      *
      * @param request - The HTTP request object.
@@ -113,13 +130,11 @@ export default class WebSocketServer {
      * @param data - The raw WebSocket frame data.
      */
     private async handleWebSocketFrame(connection: ConnectionType, data: Buffer) {
-        // Measure the time taken to process the WebSocket frame
-        console.time('handleWebSocketFrame');
 
         // Decode the WebSocket frame using the WebAssembly module
+        if (this.options.benchmarks) console.time('handleWebSocketFrame');
         const { opcode, payload } = handle_websocket_frame(data);
-
-        console.timeEnd('handleWebSocketFrame');
+        if (this.options.benchmarks) console.timeEnd('handleWebSocketFrame');
 
         // Handle close frames (opcode 0x8)
         if (opcode === 0x8) {

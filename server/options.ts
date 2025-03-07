@@ -4,11 +4,28 @@
 export interface Options {
 
     /**
-     * The verbosity level for logging messages.
+     * The verbosity level for logging messages. 
      * 
-     * @default 'info'
+     *  - 'debug': Log all (there are alot of logs).
+     * - 'info': Log informational messages, warnings, and errors.
+     * - 'warn': Log warnings and errors.
+     * - 'error': Log only errors.
+     * - 'silent': Disable all logging.
+     * - 'trace': Log all messages with stack traces.
+     * 
+     * You can also specify a comma-separated list of levels to log, e.g., 'info,error'.
+     * 
+     * @default 'info,error'
      */
-    verbose?: 'debug' | 'info' | 'warn' | 'error';
+    verbose?: 'debug' | 'info' | 'warn' | 'error' | 'silent' | 'trace' | string;
+
+    /**
+     * Whether to enable performance benchmarks for the WebSocket server.
+     * Enabling benchmarks logs additional performance metrics for each WebSocket frame.
+     * 
+     * @default false
+     */
+    benchmarks?: boolean;
 
     /**
      * Whether to perform a warm-up of the WebAssembly module.
@@ -40,5 +57,6 @@ export const DefaultOptions: Options = {
     do_warmup: true,
     warmup_runs: 150,
     warmup_data_size: 1 * 1024 * 1024,
-    verbose: 'info'
+    verbose: 'info',
+    benchmarks: false
 };

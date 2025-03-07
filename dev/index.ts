@@ -3,9 +3,7 @@ import { createServer } from "http";
 
 const httpServer = createServer()
 const ws = new arachne(httpServer, {
-    do_warmup: true,
-    warmup_runs: 150,
-    warmup_data_size: 1 * 1024 * 1024
+    benchmarks: true
 })
 
 ws.on('connection', (connection) => {
