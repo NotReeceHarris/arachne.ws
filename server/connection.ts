@@ -14,12 +14,9 @@ export default class Connection {
     public readonly events: { [key: string]: (message: string) => void } = {};
 
     constructor(socket: Duplex, server: any) {
+        this.id = generateId();
         this.socket = socket;
         this.server = server;
-
-        console.time('generateId');
-        this.id = generateId();
-        console.timeEnd('generateId');
     }
 
     on(event: string, callback: (message: string) => void): void {
@@ -27,6 +24,7 @@ export default class Connection {
     }
 
     send(message: string) {
+
         const payload = Buffer.from(message, 'utf-8');
         const payloadLength = payload.length;
 
@@ -60,16 +58,13 @@ export default class Connection {
         payload.copy(frame, 10); // Copy payload into the frame
         this.socket.write(frame);
     }
+    
 
     broadcast(message: string, include_self = false) {
-        console.time('broadcast');
         for (const connection of this.server.connections) {
             if (!include_self && connection === this) continue;
-            console.time('send');
             connection.send(message);
-            console.timeEnd('send');
         }
-        console.timeEnd('broadcast');
     }
 }
 

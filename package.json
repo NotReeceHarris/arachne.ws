@@ -9,11 +9,11 @@
   "devDependencies": {
     "@types/node": "^22.13.9",
     "concurrently": "^9.1.2",
+    "rimraf": "^6.0.1",
     "serve": "^14.2.4",
     "tsx": "^4.19.3"
   },
   "dependencies": {
-    "handle_websocket_frame": "file:server/wasm/handle_websocket_frame",
-    "rimraf": "^6.0.1"
+    "handle_websocket_frame": "file:server/wasm/handle_websocket_frame"
   }
 }
