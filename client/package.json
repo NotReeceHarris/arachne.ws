@@ -1,0 +1,14 @@
+{
+  "name": "client",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc"
+  },
+  "author": "Reece Harris",
+  "license": "GPL-3.0",
+  "description": "Light weight, high performance, easy to use, and secure communications. ",
+  "devDependencies": {
+    "tsc": "^2.0.4"
+  }
+}

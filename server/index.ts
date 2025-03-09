@@ -14,7 +14,7 @@ const RFC_6455 = '258EAFA5-E914-47DA-95CA-C5AB0DC85B11';
 
 export default class WebSocketServer {
     // Event handlers for WebSocket events (e.g., 'connection', 'message')
-    private events: Record<string, (connection: ConnectionType) => void> = {};
+    private events: Record<string, (connection: ConnectionType, message: string | null) => void> = {};
 
     // Reference to the underlying HTTP server
     private httpServer: Server;
@@ -22,6 +22,7 @@ export default class WebSocketServer {
     // Set of active WebSocket connections
     public readonly connections: Set<ConnectionType> = new Set();
 
+    // WebSocket server options
     private options: Options;
 
     constructor(httpServer: Server, options: Options = DefaultOptions) {
@@ -97,7 +98,7 @@ export default class WebSocketServer {
         // Emit the 'connection' event if a handler is registered
         const connectionHandler = this.events['connection'];
         if (connectionHandler) {
-            connectionHandler(connection);
+            connectionHandler(connection, null);
         }
 
         // Handle incoming WebSocket frames
@@ -150,6 +151,11 @@ export default class WebSocketServer {
             if (messageHandler) {
                 messageHandler(message); // Emit the 'message' event
             }
+
+            const serverMessageHandler = this.events['message'];
+            if (serverMessageHandler) {
+                serverMessageHandler(connection, message); // Emit the 'message' event
+            }
         }
     }
 
@@ -159,7 +165,7 @@ export default class WebSocketServer {
      * @param event - The event name (e.g., 'connection', 'message').
      * @param callback - The event handler function.
      */
-    on(event: string, callback: (connection: ConnectionType) => void): void {
+    on(event: string, callback: (connection: ConnectionType, message: string | null) => void): void {
         this.events[event] = callback;
     }
 }

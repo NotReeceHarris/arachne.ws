@@ -1,0 +1,11 @@
+{
+  "name": "handle_websocket_frame",
+  "version": "0.1.0",
+  "files": [
+    "handle_websocket_frame_bg.wasm",
+    "handle_websocket_frame.js",
+    "handle_websocket_frame.d.ts"
+  ],
+  "main": "handle_websocket_frame.js",
+  "types": "handle_websocket_frame.d.ts"
+}

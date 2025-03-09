@@ -16,7 +16,6 @@ ws.on('connection', (connection) => {
     })
 })
 
-
 httpServer.listen(8008, () => {
     console.log('Server is running on http://localhost:8008')
 })
